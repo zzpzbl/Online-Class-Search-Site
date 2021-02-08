@@ -1,28 +1,23 @@
 package com.example.demo.Dao.Impl;
+import com.example.demo.entity.Course;
 import com.example.demo.mapper.CourseMapper;
 import com.example.demo.Dao.ILuceneDao;
-import com.example.demo.entity.Course;
 import org.apache.lucene.document.*;
 import org.apache.lucene.queryparser.classic.MultiFieldQueryParser;
 import org.apache.lucene.queryparser.classic.ParseException;
-import org.apache.lucene.index.Term;
 import org.apache.lucene.search.*;
-import org.apache.lucene.search.BooleanQuery.Builder;
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.index.IndexWriter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 import org.wltea.analyzer.lucene.IKAnalyzer;
 
-import java.io.BufferedOutputStream;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 @Repository(value = "luceneDao")
 public class LuceneDaoImpl implements ILuceneDao{

@@ -1,5 +1,4 @@
 package com.example.demo.controller;
-import com.example.demo.Dao.ILuceneDao;
 //import com.example.demo.entity.Course;
 import com.example.demo.entity.Course;
 import com.example.demo.entity.ResultBean;

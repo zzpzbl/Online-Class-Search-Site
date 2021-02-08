@@ -7,7 +7,6 @@ import com.example.demo.service.ILuceneService;
 import org.apache.lucene.queryparser.classic.ParseException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import sun.plugin.dom.core.CoreConstants;
 
 import java.io.IOException;
 import java.util.List;

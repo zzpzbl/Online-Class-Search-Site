@@ -1,8 +1,6 @@
 package com.example.demo.init;
 
-import com.example.demo.entity.Course;
 import com.example.demo.service.ILuceneService;
-import com.sun.xml.internal.org.jvnet.fastinfoset.VocabularyApplicationData;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationListener;
 import org.springframework.context.annotation.Configuration;
