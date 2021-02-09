@@ -81,6 +81,7 @@ public class Course {
     }
 
     public String getContentList() {
+//        System.out.println("contentList " + contentList);
         return contentList;
     }
 

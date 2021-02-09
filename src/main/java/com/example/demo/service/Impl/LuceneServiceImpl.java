@@ -5,6 +5,7 @@ import com.example.demo.entity.Course;
 import com.example.demo.mapper.CourseMapper;
 import com.example.demo.service.ILuceneService;
 import org.apache.lucene.queryparser.classic.ParseException;
+import org.apache.lucene.search.highlight.InvalidTokenOffsetsException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -27,7 +28,7 @@ public class LuceneServiceImpl implements ILuceneService{
     }
 
     @Override
-    public List<Course> searchByKeyWord(String keyWord) throws IOException, ParseException {
+    public List<Course> searchByKeyWord(String keyWord) throws IOException, ParseException, InvalidTokenOffsetsException {
         return luceneDao.searchByKeyWord(keyWord);
     }
 }
