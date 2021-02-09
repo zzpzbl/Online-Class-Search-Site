@@ -68,7 +68,7 @@ public class LuceneDaoImpl implements ILuceneDao{
         IndexSearcher indexSearcher = searcherManager.acquire();
         Analyzer analyzer = new IKAnalyzer();
         // 两个搜索域，name 和 tags
-        String[] fields = {"name", "contentTags, titleTags, universityTags"};
+        String[] fields = {"name", "contentTags", "titleTags", "universityTags"};
         MultiFieldQueryParser parser = new MultiFieldQueryParser(fields, analyzer);
         BufferedReader in = new BufferedReader(new InputStreamReader(System.in, StandardCharsets.UTF_8));
         String line = keyWord != null ? keyWord : in.readLine();
