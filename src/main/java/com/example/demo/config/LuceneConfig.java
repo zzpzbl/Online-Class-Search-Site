@@ -20,7 +20,7 @@ import java.nio.file.Paths;
 @Configuration
 public class LuceneConfig {
 
-    private static final String LUCENEINDEXPATH = "src";
+    private static final String LUCENEINDEXPATH = "F:/springboot/indexDir2";
 
     @Bean
     public Directory directory() throws IOException {
