@@ -19,6 +19,12 @@ public class CourseController {
     @Autowired
     private ILuceneService service;
 
+    // 需要验证身份
+    @GetMapping("/helloProject")
+    public String helloProject() {
+        return "Hello Project!";
+    }
+
     // 关键字搜索接口
     @PostMapping("/keyWord")
     public ResultBean<List<Course>> searchByKeyWord(@RequestBody String keyWord) throws IOException, ParseException, InvalidTokenOffsetsException {
