@@ -74,7 +74,7 @@ CREATE TABLE IF NOT EXISTS `Relative` (
 DROP TABLE IF EXISTS `Post`;
 CREATE TABLE IF NOT EXISTS `Post` (
     `user_id` INT(11),
-    `tag_id` INT(11)
+    `post_id` INT(11)
 );
 
 DROP TABLE IF EXISTS `Comment`;
