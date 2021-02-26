@@ -3,6 +3,7 @@ package com.example.demo.controller;
 import com.alibaba.fastjson.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
 import org.springframework.web.multipart.MultipartFile;
@@ -15,11 +16,23 @@ import java.util.Map;
 public class JpaController {
     @Autowired
     private JdbcTemplate jdbcTemplate;
+    @Autowired
+    BCryptPasswordEncoder bCryptPasswordEncoder;
 
-    static int user_id = 1;
+
+    static int user_id = 10;
 
     @RequestMapping("/hello")
     public String hello() {
+//        UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext()
+//                .getAuthentication()
+//                .getPrincipal();
+//        System.out.println(userDetails.getUsername());  //  获取用户名，加上了这个的话hello也需要验证身份
+//
+//        BCryptPasswordEncoder bCryptPasswordEncoder = new BCryptPasswordEncoder();
+//        System.out.println(bCryptPasswordEncoder.encode("123456"));
+//        System.out.println(bCryptPasswordEncoder.encode("222222"));
+//        System.out.println(bCryptPasswordEncoder.encode("333333"));
         return "<div>Hello World!</div><div>This is jpa on project!</div>";
     }
 
@@ -44,7 +57,7 @@ public class JpaController {
         String name = object.getString("name");
         String school = object.getString("school");
         String telephone = object.getString("telephone");
-        String password = object.getString("password");
+        String password = bCryptPasswordEncoder.encode(object.getString("password"));
         String portrait_url = "http://47.100.79.77/img/portrait.f98bd381.svg";
         List<Map<String, Object>> list = jdbcTemplate.queryForList(
                 "SELECT * FROM User WHERE name = ?", name);
@@ -101,6 +114,7 @@ public class JpaController {
                         "ORDER BY counter");
         return list;
     }
+
 
 //    @RequestMapping("/User/searchByUserId")
 //    public List<Map<String, Object>> userSearchByUserId(@RequestBody String jsonObject) {
