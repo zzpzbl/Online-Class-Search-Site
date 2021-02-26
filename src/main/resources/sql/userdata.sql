@@ -9,8 +9,9 @@ VALUES
 "https://i1.hdslb.com/bfs/archive/79a6418bf42c0d4066d0ecfb704b53d323c2bf5c.jpg@320w_200h.webp",
 "Bilibili", 3.9, 0, "video", 278);
 
+--密码依次为123456，222222，333333
 INSERT INTO `User`
 VALUES
-(1, "root", "ECNU", "13812345678", "$2a$10$M.S4pqW2TaGF2T5qpzNJQOCWeaQKJ8E8aPTw4Hh/GfKzwx0VUmHTu", "http://www.baidu.com"),
-(2, "root2", "ECNU", "13812345678", "$2a$10$LxMV8EQaSDQfuYlyh5y1lOzg8ROHUOaQ6sgGqxvCZtWRfSwuXjOXa", "http://www.baidu.com"),
-(3, "root3", "ECNU", "13812345678", "$2a$10$C4C31wFekUPWLxG34pl62eJs4xkBPXzNRkmxND5aWUhxFfRsi7o.C", "http://www.baidu.com");
+(1, "root", "ECNU", "13812345678", "$2a$10$M.S4pqW2TaGF2T5qpzNJQOCWeaQKJ8E8aPTw4Hh/GfKzwx0VUmHTu", "http://47.100.79.77/img/portrait.f98bd381.svg"),
+(2, "root2", "ECNU", "13812345678", "$2a$10$LxMV8EQaSDQfuYlyh5y1lOzg8ROHUOaQ6sgGqxvCZtWRfSwuXjOXa", "http://47.100.79.77/img/portrait.f98bd381.svg"),
+(3, "root3", "ECNU", "13812345678", "$2a$10$C4C31wFekUPWLxG34pl62eJs4xkBPXzNRkmxND5aWUhxFfRsi7o.C", "http://47.100.79.77/img/portrait.f98bd381.svg");

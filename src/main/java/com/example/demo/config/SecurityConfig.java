@@ -34,6 +34,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter
                 .authorizeRequests()
                 .antMatchers("/Course/**").authenticated()  //  /Course/**需要验证身份
 //                .antMatchers("/User/**").authenticated()  //  /User/**需要验证身份
+                .antMatchers("/shouldAuthority").authenticated()  //  /shouldAuthority需要验证身份
                 .anyRequest().permitAll()  //  其他都不需要验证
                 .and()
                 .httpBasic().and().csrf().disable();

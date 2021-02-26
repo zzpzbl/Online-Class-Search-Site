@@ -56,7 +56,7 @@ DROP TABLE IF EXISTS `Browse`;
 CREATE TABLE IF NOT EXISTS `Browse` (
     `course_id` INT(11),
     `user_id` INT(11),
-    `browse_time` VARCHAR(200)
+    `browse_time` INT(11)
 );
 
 DROP TABLE IF EXISTS `Watch`;
