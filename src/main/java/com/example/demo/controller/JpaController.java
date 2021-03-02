@@ -62,10 +62,33 @@ public class JpaController {
 //        return list;
 //    }
 //
-//    @RequestMapping("/Course/insertByFile")
-//    public void courseInsertByFile(@RequestBody String file) throws Exception {
+    @RequestMapping("/Course/insertByFile")
+    public void courseInsertByFile(@RequestBody String file) throws Exception {
 //        System.out.println(file);
-//    }
+        String[] obj = file.split("\n");
+        System.out.println(obj.length);
+        for (String o : obj) {
+            System.out.println("o = " + o);
+            JSONObject object = JSONObject.parseObject(o);
+            int course_id = object.getIntValue("id");
+            System.out.println("course_id = " + course_id);
+            String name = object.getString("title");
+            System.out.println("name = " + name);
+            String url = object.getString("class_url");
+            System.out.println("url = " + url);
+            String cover = object.getString("image_url");
+            System.out.println("cover = " + cover);
+            String origin = "bilibili";
+            int score = 0;
+            int counter = 0;
+            String type = "video";
+            int relative_id = object.getIntValue("relative_id");
+            System.out.println("relative_id = " + relative_id);
+
+            jdbcTemplate.update("INSERT INTO Mycourse VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)",
+                    course_id, name, url, cover, origin, score, counter, type, relative_id);
+        }
+    }
 
     @RequestMapping("/User/insert")
     public String userInsert(@RequestBody String jsonObject) {
@@ -92,7 +115,7 @@ public class JpaController {
     public String userLogin(@RequestBody String jsonObject) {
         JSONObject object = JSONObject.parseObject(jsonObject);
         String name = object.getString("name");
-        String password = object.getString("password");
+        String password = bCryptPasswordEncoder.encode(object.getString("password"));
         List<Map<String, Object>> list = jdbcTemplate.queryForList(
                 "SELECT * FROM User WHERE name = ? and password = ?",
                 name, password);
@@ -119,6 +142,17 @@ public class JpaController {
         return list;
     }
 
+    @RequestMapping("/Course/hot")
+    public List<Map<String, Object>> courseHot() {
+        List<Map<String, Object>> list = jdbcTemplate.queryForList(
+                "SELECT course_id, name, url, cover, origin, score, counter, type, universityList, titleList, contentList " +
+                        "FROM Course, Mycourse " +
+                        "WHERE Course.name = Mycourse.name AND Course.url = Mycourse.url " +
+                        "ORDER BY counter DESC " +
+                        "LIMIT 3");
+        return list;
+    }
+
     @RequestMapping("/Posting/hot")
     public List<Map<String, Object>> postingHot() {
         List<Map<String, Object>> list = jdbcTemplate.queryForList(
@@ -139,12 +173,21 @@ public class JpaController {
                     .getPrincipal();
             name = userDetails.getUsername();
         }
-        List<Map<String, Object>> list = jdbcTemplate.queryForList(
-                "SELECT course_id, name, url, cover, origin, score, counter, type " +
+        List<Map<String, Object>> list1 = jdbcTemplate.queryForList(
+                "SELECT Browse.course_id, name, url, cover, origin, score, counter, type " +
                         "FROM Browse, Mycourse, User " +
                         "WHERE Browse.course_id = Mycourse.course_id AND Browse.user_id = User.user_id AND User.name = ? " +
-                        "ORDER BY Browse.browse_time DESC", name);
-        return list;
+                        "ORDER BY Browse.browse_time DESC " +
+                        "LIMIT 5", name);
+        int list1len = list1.size();
+        List<Map<String, Object>> list2 = jdbcTemplate.queryForList(
+                "SELECT course_id, name, url, cover, origin, score, counter, type " +
+                        "FROM Course, Mycourse " +
+                        "WHERE Course.name = Mycourse.name AND Course.url = Mycourse.url " +
+                        "ORDER BY counter DESC " +
+                        "LIMIT ?", 5 - list1len);
+        list1.addAll(list2);
+        return list1;
     }
 
     @RequestMapping("/Posting/searchByCourseId")
@@ -153,9 +196,42 @@ public class JpaController {
         int course_id = object.getIntValue("course_id");
         List<Map<String, Object>> list = jdbcTemplate.queryForList(
                 "SELECT post_id, type, title, content, counter, post_time, user_id, name, portrait_url " +
-                        "FROM Posting NATURAL JOIN Post NATURAL JOIN User NATURAL JOIN relative " +
+                        "FROM Posting NATURAL JOIN Post NATURAL JOIN User NATURAL JOIN Relative " +
                         "WHERE course_id = ?", course_id);
         return list;
+    }
+
+    @RequestMapping("/Rate/insert")
+    public String rateInsert(@RequestBody String jsonObject) {
+        JSONObject object = JSONObject.parseObject(jsonObject);
+        int course_id = object.getIntValue("course_id");
+        int score = object.getIntValue("score");
+        UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext()
+                .getAuthentication()
+                .getPrincipal();
+        String name = userDetails.getUsername();
+        List<Map<String, Object>> list = jdbcTemplate.queryForList(
+                "SELECT user_id " +
+                        "FROM User " +
+                        "WHERE name = ?", name);
+        int user_id = (int)list.get(0).get("user_id");
+        List<Map<String, Object>> list2 = jdbcTemplate.queryForList(
+                "SELECT * " +
+                        "FROM Rate " +
+                        "WHERE user_id = ? AND course_id = ? ", user_id, course_id);
+        if (list2.size() == 1) {
+            return "评分失败";
+        } else {
+            int rate_time = (int)(System.currentTimeMillis() / 1000);
+            jdbcTemplate.update("INSERT INTO Rate VALUES (?, ?, ?, ?)",
+                    user_id, course_id, rate_time, score);
+            List<Map<String, Object>> list3 = jdbcTemplate.queryForList(
+                    "SELECT AVG(score) as avg FROM Rate WHERE course_id = ? ", course_id);
+            double avgscore = (int)list3.get(0).get("avg");
+            jdbcTemplate.update("UPDATE Mycourse SET score = ? WHERE course_id = ? ",
+                    avgscore, course_id);
+            return "评分成功";
+        }
     }
 
     @RequestMapping("/Star/insert")
@@ -174,11 +250,29 @@ public class JpaController {
         jdbcTemplate.update("INSERT INTO Star VALUES (?, ?)", course_id, user_id);
     }
 
+    @RequestMapping("/Star/search")
+    public List<Map<String, Object>> starSearch() {
+        UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext()
+                .getAuthentication()
+                .getPrincipal();
+        String name = userDetails.getUsername();
+        List<Map<String, Object>> list = jdbcTemplate.queryForList(
+                "SELECT user_id " +
+                        "FROM User " +
+                        "WHERE name = ?", name);
+        int user_id = (int)list.get(0).get("user_id");
+        List<Map<String, Object>> list2 = jdbcTemplate.queryForList(
+                "SELECT Temp.course_id, Course.name, Course.url, Course.cover, Course.origin, Mycourse.type, Course.universityList, Course.titleList, Course.contentList " +
+                        "FROM (SELECT course_id AS course_id FROM Star WHERE user_id = ? ) as Temp, Course, Mycourse " +
+                        "WHERE Temp.course_id = Course.id AND Course.id = Mycourse.course_id ", user_id);
+        return list2;
+    }
+
     @RequestMapping("/Post/insert")
     public String postInsert(@RequestBody String jsonObject) {
         JSONObject object = JSONObject.parseObject(jsonObject);
         post_id++;
-        int post_time = object.getIntValue("post_time");
+        int post_time = (int)System.currentTimeMillis() / 1000;
         String type = object.getString("type");
         String title = object.getString("title");
         String content = object.getString("content");
@@ -221,7 +315,7 @@ public class JpaController {
                         "WHERE name = ?", name);
         int user_id = (int)list.get(0).get("user_id");
         jdbcTemplate.update("INSERT INTO Comment " +
-                "VALUES (?, ?, ?, ?) ", user_id, post_id, content, System.currentTimeMillis() / 1000);
+                "VALUES (?, ?, ?, ?) ", user_id, post_id, content, (int)(System.currentTimeMillis() / 1000));
     }
 
     @RequestMapping("/Posting/search")
